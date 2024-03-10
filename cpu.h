@@ -1,4 +1,11 @@
 #ifndef __CHIP8_CPU__
+#include "stdio.h"
+#include "stdint.h"
+#include "stdlib.h"
+
+#define PWIDE 64
+#define PTALL 32
+#define MEMORYSIZE 4096
 
 enum registers{
     V0,
@@ -17,15 +24,16 @@ enum registers{
     VD,
     VE,
     VF,
-    COUNT
+    REGCOUNT
 };
 
 
 
 typedef struct chip8_cpu {
     unsigned short opcode;
-    unsigned char memory[4096];
-    unsigned char V[COUNT];
+    unsigned char memory[MEMORYSIZE];
+    unsigned char V[REGCOUNT];
+    unsigned char gfx[PWIDE * PTALL];
     unsigned short I;
     unsigned short pc;
     unsigned short stack[16];
