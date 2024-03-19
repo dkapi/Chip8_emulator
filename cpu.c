@@ -61,6 +61,29 @@ void load_rom(const char* rom)
     free(rom_buf);
 }
 
+// pretty sure this should be short as opcode is 2 bytes
+// need to double check
+unsigned short fetch_opcode()
+{
+    unsigned short opcode;
+    return opcode = cpu.memory[cpu.pc] << 8| cpu.memory[cpu.pc+1];
+}
+
+void emulate_cycle()
+{
+    short opcode = fetch_opcode();
+
+    switch (opcode & 0xF0)
+    {
+    case /* constant-expression */:
+        /* code */
+        break;
+    
+    default:
+        break;
+    }
+}
+
 
 void sys_init(const char* rom)
 {
@@ -85,7 +108,11 @@ int main(int argc, char* argv[])
     }
     const char *rom_file = argv[1];
     sys_init(rom_file);
+    // unsigned short opcode1 = fetch_opcode();
+    // uint16_t opcode2 = cpu.memory[cpu.pc] << 8 | cpu.memory[cpu.pc+1];
 
+    // printf("short opcode1: %x\n", opcode1);
+    // printf("unsigned 16: %x\n", opcode2);
 }
 
 
