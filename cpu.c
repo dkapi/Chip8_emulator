@@ -1,8 +1,17 @@
 #include "cpu.h"
 
+
+//TODO: maybe dont do this, and just initialize in cpu_init function
 static chip8_t cpu = {0}; //short hand to init all to zero
 
-const uint8_t font_sprites[] = 
+
+/*  font in chip-8 emulators is stored in
+    memory locations 0x050 - 0x0A0 i.e. 80-160
+    we will follow that convention here
+*/
+
+//extern to only store one instance of this array between files
+const uint8_t chip8_font_sprites[] = 
 {
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -22,15 +31,11 @@ const uint8_t font_sprites[] =
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-/*  font in most chip-8 emulators is stored in
-    memory locations 0x050 - 0x0A0 i.e. 80-160
-    we will follow that convention here
-*/
 void load_font()
 {
     int i;
-    for(i = 0; i < sizeof(font_sprites); i++){
-        cpu.memory[0x050 + i] = font_sprites[i];
+    for(i = 0; i < sizeof(chip8_font_sprites); i++) {
+        cpu.memory[0x050 + i] = chip8_font_sprites[i];
     }
 }
 //TODO: possibly use errno.h for error handling across funcs
@@ -62,7 +67,79 @@ void load_rom(const char* rom)
 }
 
 
-void sys_init(const char* rom)
+// prolly write it as a pre processor function
+static inline uint16_t fetch_opcode()
+{
+    return cpu.memory[cpu.pc] << 8 | cpu.memory[cpu.pc+1];
+}
+
+
+void decode(uint16_t opcode)
+{
+    uint16_t NNN    = opcode & 0x0FFF;  // address, 12 bit
+    uint16_t NN     = opcode & 0x00FF;  // 8-bit constant
+    uint16_t N      = opcode & 0x000F;  // 4-bit constant
+    uint16_t regX   = NIBBLE_2(opcode); // 2nd most significant nibble (4-bit register identifier)
+    uint16_t regY   = NIBBLE_3(opcode); // 3rd most significant nibble (4-bit register identifier)
+
+    switch(opcode & 0xF000) {
+        case 0x0000: 
+            switch(opcode & 0x00FF) {
+                case 0x00E0: // clears the display
+                    break;
+                case 0x00EE: // returns from a subroutine
+                    if(cpu.pc == 0) {
+                        printf("stack underflow error, cannot return from subroutine as there is none");
+                        exit(1);
+                    }
+                    --cpu.sp;
+                    cpu.pc = cpu.stack[cpu.sp];
+                    break;
+                default:  // syscall case, i.e. 0x0NNN, or anything else
+                    break;
+            }
+            break;
+        case 0x1000: // jump to address NNN
+            cpu.pc = NNN;
+            break;
+        case 0x2000:
+            cpu.stack[cpu.sp] = cpu.pc;
+            ++cpu.sp;
+            cpu.pc = NNN;
+            break;
+        case 0x3000: // skip next instruction if reg VX == NN
+            if(cpu.V[regX] == NN) cpu.pc += 2; // i think to skip next instruction we just incriment pc by 2
+            break;
+        case 0x4000: /// skip next instruction if reg VX != NN
+            if(cpu.V[regX] != NN) cpu.pc += 2;
+            break;
+        case 0x5000:
+            if(cpu.V[regX] == cpu.V[regY]) cpu.pc += 2;
+            break;
+        case 0x6000:
+            cpu.V[regX] = NN;
+            break;
+        case 0x7000:
+            cpu.V[regX] += NN;
+            break;
+        default:
+        printf("unknown opcode:%d\n",opcode);
+        break;
+    }
+
+
+}
+
+
+void emulate_cycle()
+{
+    uint16_t opcode = fetch_opcode();
+    decode(opcode);
+    
+}
+
+
+void cpu_init(const char* rom)
 {
     load_font();
     load_rom(rom);
@@ -72,21 +149,11 @@ void sys_init(const char* rom)
 
 void mem_dump()
 {
-    for(int i =0; i < 4097; i++){
+    for(int i =0; i < MEMORYSIZE; i++){
         printf("mem %d: %d\n",i,cpu.memory[i]);
     }
 }
 
-int main(int argc, char* argv[])
-{
-    if(argc != 2){
-        printf("no rom entered\n");
-        exit(0);
-    }
-    const char *rom_file = argv[1];
-    sys_init(rom_file);
-
-}
 
 
 

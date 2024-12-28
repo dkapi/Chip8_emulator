@@ -1,0 +1,5 @@
+.vscode/
+
+*.o
+
+chip8_em
