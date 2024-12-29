@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "stdint.h"
 #include "stdlib.h"
+#include "stdbool.h"
 
 #define PWIDE 64         // pixel width definition
 #define PTALL 32         //pixel length definition
@@ -17,7 +18,7 @@
 
 
 /**
- *  0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
+ *  0x000-0x1FF - Chip 8 interpreter (contains font set in memory)
  *  0x050-0x0A0 - Used for the built in 4x5 pixel font set (0-F)
  *  0x200-0xFFF - Program ROM and work RAM
 **/
@@ -55,6 +56,7 @@ typedef struct chip8_cpu {
     uint8_t memory[MEMORYSIZE];   // memory/ram of chipset
     uint8_t V[REGCOUNT];          // virtual registars 0-16
     uint8_t gfx[PWIDE * PTALL];   // aray to hold pixel state(1 or 0)
+    bool drawflag;                // flag to update screen
     uint8_t key[16];              // keypad array: use to store current state
     uint8_t delay_timer;          // timer register intended for timing events in programs
     uint8_t sound_timer;          // timer reigster intended for sound effects, nonzero value
@@ -69,8 +71,13 @@ void load_font();
 void load_rom(const char* rom);
 void decode(uint16_t opcode);
 void emulate_cycle();
+void update_chip_timers();
 void cpu_init(const char* rom);
+// for load and store, address is to remain unmodified, but incremented by 1 in each iteration
+void register_store(uint8_t start_reg, const uint16_t address);
+void register_load(uint8_t start_reg, const uint16_t address);
 void mem_dump();
+void draw_gfx(uint8_t Vx, uint8_t Vy, uint16_t height);
 
 
 #endif /*CPU_H*/
