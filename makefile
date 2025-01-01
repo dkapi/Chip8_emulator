@@ -2,9 +2,8 @@
 #compiler
 CC = gcc
 
-CFLAGS = -Wall
-
-#EXTRA_FLAGS = 
+CFLAGS = -Wall `sdl-config --cflags`
+LFLAGS = `sdl2-config --libs` 
 
 SRC = main.c cpu.c
 
@@ -18,7 +17,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	@echo "Linking $@ with object files: $^"
     #@ prefixed to call will supress output
-	@$(CC) $(OBJ) -o $@
+	@$(CC) $(OBJ) -o $@ $(LFLAGS)
 	@echo "Executable created: $@"
 
 # Compile source files to object files
