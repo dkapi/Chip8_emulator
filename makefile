@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Wall `sdl-config --cflags`
 LFLAGS = `sdl2-config --libs` 
 
-SRC = main.c cpu.c
+SRC = main.c cpu.c gfx.c
 
 OBJ = $(SRC:.c=.o)
 

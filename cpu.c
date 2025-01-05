@@ -130,14 +130,17 @@ void decode(uint16_t opcode)
         case 0x0000: 
             switch(opcode & 0x00FF) {
                 case 0x00E0: // clears the display
+                    for(int i = 0; i < PTALL * PWIDE; i++) {
+                        cpu.gfx[i] = 0;
+                    }
+                    cpu.pc += 2;
                     break;
                 case 0x00EE: // returns from a subroutine
                     if(cpu.pc == 0) {
                         printf("stack underflow error, cannot return from subroutine as there is none");
                         exit(1);
                     }
-                    --cpu.sp;
-                    cpu.pc = cpu.stack[cpu.sp];
+                    cpu.pc = cpu.stack[--cpu.sp];
                     break;
                 default:  // syscall case, i.e. 0x0NNN, or anything else
                     break;
@@ -220,6 +223,7 @@ void decode(uint16_t opcode)
                     cpu.pc += 2;
                     break;
                 case 0xE: // logical left shift by 1, store MSB of VX in VF
+                //TODO: also ambiguous
                     cpu.V[VF] = (cpu.V[regX] >> 7) & 0x1;
                     cpu.V[regX] <<= 1;
                     cpu.pc += 2;
@@ -242,13 +246,12 @@ void decode(uint16_t opcode)
             cpu.V[regX] = ((rand() % 255 + 1) & NN);
             cpu.pc += 2;
             break;
-        case 0xD000: // draws a sprite at the coordinate (Vx, Vy) //TODO:
+        case 0xD000: // draws a sprite at the coordinate (Vx, Vy) 
             draw_gfx(regX, regY, N);
             cpu.pc += 2;
             break;
         case 0xE000: // key ops
             switch(opcode & 0x000F) {
-                //TODO:
                 case 0xE: // skips the next instruction if the key stored in VX is pressed
                     if(cpu.key[cpu.V[regX]] != 0) {
                         cpu.pc += 4;
@@ -272,6 +275,19 @@ void decode(uint16_t opcode)
                     cpu.pc += 2;
                     break;
                 case 0x0A: // a key press is awaited, then stored in VX(blocking op, everything but timers halted)
+                // def need to test
+                    bool key_press_flag = false;
+                    for(int i = 0; i < KEYSIZE; ++i) {
+                        if(cpu.key[i] != 0) {
+                            key_press_flag = true;
+                            cpu.V[regX] = i;
+                        }
+                    }
+                    if(!key_press_flag) {
+                        return;
+                    }
+                    cpu.pc += 2;
+                    break;
                 case 0x15:
                     cpu.delay_timer = cpu.V[regX];
                     cpu.pc += 2;
@@ -304,7 +320,7 @@ void decode(uint16_t opcode)
             }
             break;
         default:
-        printf("unknown opcode:%d\n",opcode);
+        printf("unknown opcode:0x%X\n",opcode);
         break;
     }
 

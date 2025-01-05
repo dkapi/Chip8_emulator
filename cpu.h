@@ -1,13 +1,16 @@
 #ifndef CPU_H
 #define CPU_H
-#include "stdio.h"
-#include "stdint.h"
-#include "stdlib.h"
-#include "stdbool.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "gfx.h"
 
 #define PWIDE 64         // pixel width definition
-#define PTALL 32         //pixel length definition
+#define PTALL 32         // pixel length definition
 #define MEMORYSIZE 4096  // max size of memory 4KB
+#define STACKSIZE 16     // size of internal stack
+#define KEYSIZE 16       // amount of keys usable
 
 // macros to return all nibbles of a 2 byte value
 #define NIBBLE_1(b) ((b) & 0x0F)          // least significant nibble (4th nibble from the right)
@@ -51,13 +54,13 @@ typedef struct chip8_cpu {
     uint16_t opcode;              // current opcode
     uint16_t I;                   // index/address register 12 bit wide
     uint16_t pc;                  // program counter: range from 0x00 - 0xFFF
-    uint16_t stack[16];           // stack for jumps/routine calls
+    uint16_t stack[STACKSIZE];           // stack for jumps/routine calls
     uint16_t sp;                  // stack pointer
     uint8_t memory[MEMORYSIZE];   // memory/ram of chipset
     uint8_t V[REGCOUNT];          // virtual registars 0-16
     uint8_t gfx[PWIDE * PTALL];   // aray to hold pixel state(1 or 0)
     bool drawflag;                // flag to update screen
-    uint8_t key[16];              // keypad array: use to store current state
+    uint8_t key[KEYSIZE];              // keypad array: use to store current state
     uint8_t delay_timer;          // timer register intended for timing events in programs
     uint8_t sound_timer;          // timer reigster intended for sound effects, nonzero value
                                   // makes a beeping sound
