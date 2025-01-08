@@ -70,17 +70,20 @@ typedef struct chip8_cpu {
 
 
 //function prototypes
-void load_font();
-void load_rom(const char* rom);
-void decode(uint16_t opcode);
-void emulate_cycle();
-void update_chip_timers();
-void cpu_init(const char* rom);
+
+void chip8_init(chip8_t *cpu, const char* rom);
+void load_font(chip8_t *cpu);
+void load_rom(chip8_t *cpu, const char* rom);
+void decode(chip8_t *cpu, uint16_t opcode);
+void emulate_cycle(chip8_t *cpu);
+void chip8_update_timers(chip8_t *cpu);
+// void cpu_init(chip8_t *cpu, const char* rom);
 // for load and store, address is to remain unmodified, but incremented by 1 in each iteration
-void register_store(uint8_t start_reg, const uint16_t address);
-void register_load(uint8_t start_reg, const uint16_t address);
-void mem_dump();
-void draw_gfx(uint8_t Vx, uint8_t Vy, uint16_t height);
+void register_store(chip8_t *cpu, uint8_t start_reg, const uint16_t address);
+void register_load(chip8_t *cpu, uint8_t start_reg, const uint16_t address);
+void mem_dump(chip8_t *cpu);
+void dump_gfx(chip8_t* cpu);
+void draw_gfx(chip8_t *cpu, uint8_t Vx, uint8_t Vy, uint16_t height);
 
 
 #endif /*CPU_H*/
