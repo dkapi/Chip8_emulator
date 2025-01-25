@@ -7,6 +7,7 @@
 // forward declaration of chip8 struct
 typedef struct chip8_cpu chip8_t;
 
+
 // global SDL variables
 extern SDL_Renderer* renderer;
 extern SDL_Texture* texture;

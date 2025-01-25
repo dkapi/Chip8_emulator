@@ -132,7 +132,7 @@ void draw_gfx(chip8_t* cpu, uint8_t Vx, uint8_t Vy, uint16_t height)
                 cpu->gfx[x_coord + (y_coord * 64)] ^= 1;
 
                 // debug output
-                printf("drawing pixel at (%d, %d)\n", x_coord, y_coord);
+               // printf("drawing pixel at (%d, %d)\n", x_coord, y_coord);
             }
         }
     }
@@ -143,11 +143,11 @@ void draw_gfx(chip8_t* cpu, uint8_t Vx, uint8_t Vy, uint16_t height)
 
 void decode(chip8_t* cpu, uint16_t opcode)
 {
-    uint16_t NNN    = opcode & 0x0FFF;  // address, 12 bit
-    uint16_t NN     = opcode & 0x00FF;  // 8-bit constant
-    uint16_t N      = opcode & 0x000F;  // 4-bit constant
-    uint16_t regX   = NIBBLE_2(opcode); // 2nd most significant nibble (4-bit register identifier)
-    uint16_t regY   = NIBBLE_3(opcode); // 3rd most significant nibble (4-bit register identifier)
+    uint16_t NNN    = (opcode & 0x0FFF);  // address, 12 bit
+    uint16_t NN     = (opcode & 0x00FF);  // 8-bit constant
+    uint16_t N      = (opcode & 0x000F);  // 4-bit constant
+    uint16_t regX   = NIBBLE_3(opcode); // 2nd most significant nibble (4-bit register identifier)
+    uint16_t regY   = NIBBLE_2(opcode); // 3rd most significant nibble (4-bit register identifier)
 
     switch(opcode & 0xF000) {
         case 0x0000: 
@@ -284,8 +284,8 @@ void decode(chip8_t* cpu, uint16_t opcode)
             cpu->pc += 2;
             break;
         case 0xD000: // draws a sprite at the coordinate (Vx, Vy) 
-        printf("Drawing sprite at Vx=%d (X=%d), Vy=%d (Y=%d), height=%d, I=%03X\n",
-        cpu->V[regX], regX, cpu->V[regY], regY, N, cpu->I);
+        //printf("Drawing sprite at Vx=%d (X=%d), Vy=%d (Y=%d), height=%d, I=%03X\n",
+        //cpu->V[regX], regX, cpu->V[regY], regY, N, cpu->I);
             draw_gfx(cpu ,regX, regY, N);
             cpu->pc += 2;
             break;
@@ -371,7 +371,7 @@ void decode(chip8_t* cpu, uint16_t opcode)
         printf("unknown opcode:0x%X\n",opcode);
         break;
     }
-
+   // printf("opcode: 0x%X, regX:0x%X, regY:0x%X\n", opcode, regX, regY);
 
 }
 

@@ -1,6 +1,26 @@
 #include "cpu.h"
 #include "gfx.h"
 
+//sdl keybinds
+const SDL_Scancode chip8_keymap[16] = {
+    SDL_SCANCODE_X,      // 0
+    SDL_SCANCODE_1,      // 1
+    SDL_SCANCODE_2,      // 2
+    SDL_SCANCODE_3,      // 3
+    SDL_SCANCODE_Q,      // 4
+    SDL_SCANCODE_W,      // 5
+    SDL_SCANCODE_E,      // 6
+    SDL_SCANCODE_A,      // 7
+    SDL_SCANCODE_S,      // 8
+    SDL_SCANCODE_D,      // 9
+    SDL_SCANCODE_Z,      // A
+    SDL_SCANCODE_C,      // B
+    SDL_SCANCODE_4,      // C
+    SDL_SCANCODE_R,      // D
+    SDL_SCANCODE_F,      // E
+    SDL_SCANCODE_V       // F
+};
+
 int main(int argc, char* argv[])
 {
     // grab rom file from arguments
@@ -25,6 +45,16 @@ int main(int argc, char* argv[])
         while(SDL_PollEvent(&e)) {
             if(e.type == SDL_QUIT) {
                 quit = true;
+            } else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP) {
+                SDL_Scancode scancode = e.key.keysym.scancode;
+                bool is_pressed = (e.type == SDL_KEYDOWN);
+
+                for( int i = 0; i < KEYSIZE; i++) {
+                    if(scancode == chip8_keymap[i]) {
+                        c8->key[i] = is_pressed ? 1 : 0;
+                        break;
+                    }
+                }
             }
         }
         // emulate a single cycle of the chip 8 cpu
@@ -38,7 +68,7 @@ int main(int argc, char* argv[])
             SDL_RenderPresent(renderer);
             c8->drawflag = false;
         }
-        dump_gfx(c8);
+        //dump_gfx(c8);
 
         //delay for ~60Hz
         SDL_Delay(16); 

@@ -2,7 +2,7 @@
 #compiler
 CC = gcc
 
-CFLAGS = -Wall `sdl-config --cflags`
+CFLAGS = -Wall `sdl-config --cflags` -g
 LFLAGS = `sdl2-config --libs` 
 
 SRC = main.c cpu.c gfx.c
