@@ -167,6 +167,7 @@ void decode(chip8_t* cpu, uint16_t opcode)
                     cpu->pc = cpu->stack[--cpu->sp];
                     break;
                 default:  // syscall case, i.e. 0x0NNN, or anything else
+                    cpu->pc +=2;
                     break;
             }
             break;
@@ -371,7 +372,7 @@ void decode(chip8_t* cpu, uint16_t opcode)
         printf("unknown opcode:0x%X\n",opcode);
         break;
     }
-   // printf("opcode: 0x%X, regX:0x%X, regY:0x%X\n", opcode, regX, regY);
+    printf("EOD call: opcode: 0x%X, regX:0x%X, regY:0x%X\n", opcode, regX, regY);
 
 }
 
@@ -393,6 +394,7 @@ void chip8_update_timers(chip8_t* cpu)
 void emulate_cycle(chip8_t* cpu)
 {
     uint16_t opcode = fetch_opcode(cpu);
+    printf("PC: 0x%04X, Opcode: 0x%04X\n", cpu->pc, opcode);
     decode(cpu, opcode); // decode also executes
 
     //update timers as well
