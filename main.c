@@ -32,7 +32,8 @@ int main(int argc, char* argv[])
 
     //initialize chip 8 emulator
     chip8_t* c8 = malloc(sizeof(chip8_t));
-    chip8_init(c8, rom_file);
+    chip8_init(c8);
+    load_rom(c8 ,rom_file);
 
     // initialize sdl and create window
     SDL_Window* c8_window = gfx_init(PTALL * 20, PWIDE * 20);
@@ -68,10 +69,10 @@ int main(int argc, char* argv[])
             SDL_RenderPresent(renderer);
             c8->drawflag = false;
         }
-        //dump_gfx(c8);
+        dump_gfx(c8);
 
         //delay for ~60Hz
-        SDL_Delay(16); 
+        //SDL_Delay(16); 
     }
 
     SDL_DestroyWindow(c8_window);

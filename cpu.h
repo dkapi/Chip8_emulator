@@ -71,7 +71,8 @@ typedef struct chip8_cpu {
 
 //function prototypes
 
-void chip8_init(chip8_t *cpu, const char* rom);
+void chip8_init(chip8_t *cpu);
+//inline uint16_t fetch_opcode(chip8_t* cpu);
 void load_font(chip8_t *cpu);
 void load_rom(chip8_t *cpu, const char* rom);
 void decode(chip8_t *cpu, uint16_t opcode);
