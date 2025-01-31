@@ -31,7 +31,7 @@ const uint8_t chip8_font_sprites[] =
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-void chip8_init(chip8_t *cpu, const char* rom) {
+void chip8_init(chip8_t *cpu) {
     cpu->pc = 0x200; // start at 0x200
     cpu->I = 0;
     cpu->sp = 0;
@@ -44,7 +44,7 @@ void chip8_init(chip8_t *cpu, const char* rom) {
     cpu->drawflag = false;
 
     load_font(cpu);
-    load_rom(cpu, rom);
+    //rom is loaded outside of this function call for testing
 }
 
 
@@ -167,7 +167,7 @@ void decode(chip8_t* cpu, uint16_t opcode)
                     cpu->pc = cpu->stack[--cpu->sp];
                     break;
                 default:  // syscall case, i.e. 0x0NNN, or anything else
-                    cpu->pc +=2;
+                    cpu->pc += 2;
                     break;
             }
             break;
@@ -175,8 +175,7 @@ void decode(chip8_t* cpu, uint16_t opcode)
             cpu->pc = NNN;
             break;
         case 0x2000: // calls subroutine at address NNN
-            cpu->stack[cpu->sp] = cpu->pc;
-            ++cpu->sp;
+            cpu->stack[cpu->sp++] = cpu->pc;
             cpu->pc = NNN;
             break;
         case 0x3000: // skip next instruction if reg VX == NN
@@ -372,7 +371,7 @@ void decode(chip8_t* cpu, uint16_t opcode)
         printf("unknown opcode:0x%X\n",opcode);
         break;
     }
-    printf("EOD call: opcode: 0x%X, regX:0x%X, regY:0x%X\n", opcode, regX, regY);
+   // printf("opcode: 0x%04X, regX:0x%X, regY:0x%X\n", opcode, regX, regY);
 
 }
 
