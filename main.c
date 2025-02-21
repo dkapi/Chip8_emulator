@@ -69,10 +69,10 @@ int main(int argc, char* argv[])
             SDL_RenderPresent(renderer);
             c8->drawflag = false;
         }
-        dump_gfx(c8);
+       // dump_gfx(c8);
 
         //delay for ~60Hz
-        //SDL_Delay(16); 
+        SDL_Delay(16); 
     }
 
     SDL_DestroyWindow(c8_window);
