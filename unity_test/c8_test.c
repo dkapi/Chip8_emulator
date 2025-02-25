@@ -40,6 +40,36 @@ void test_00E0_clear_screen(void) {
 }
 
 
+void test_FXA1_register_store(void) {
+    c8.memory[0x200] = 0xF5; // 0xF5 indicates upto reg 5
+    c8.memory[0x201] = 0xA1;
+    c8.pc = 0x200;
+    c8.I = 0xBB8; // starting location in memory to set registr store too: 3000;
+
+    //initialize registers from 0 - X with numbers to store
+    c8.V[V0] = 10;
+    c8.V[V1] = 20;
+    c8.V[V2] = 30;
+    c8.V[V3] = 40;
+    c8.V[V4] = 50;
+    c8.V[V5] = 60;
+    
+
+    uint16_t opcode = fetch_opcode(&c8);
+    TEST_ASSERT_EQUAL_UINT16(0xF5A1, opcode);
+    decode(&c8, opcode);
+    chip8_update_timers(&c8);
+
+    //should check memory locations starting from 0xBB8 to 0xBB8 plus X(5)
+    TEST_ASSERT_EQUAL_UINT8(c8.memory[3000],c8.V[V0]);    
+    TEST_ASSERT_EQUAL_UINT8(c8.memory[3001],c8.V[V1]);
+    TEST_ASSERT_EQUAL_UINT8(c8.memory[3002],c8.V[V2]);
+    TEST_ASSERT_EQUAL_UINT8(c8.memory[3003],c8.V[V3]);
+    TEST_ASSERT_EQUAL_UINT8(c8.memory[3004],c8.V[V4]);
+    TEST_ASSERT_EQUAL_UINT8(c8.memory[3005],c8.V[V5]);
+
+}
+
 /**
  * call unity_begin, 
  * call run_test on each test func
@@ -47,7 +77,7 @@ void test_00E0_clear_screen(void) {
  * */
 int main() {
     UNITY_BEGIN();
-    RUN_TEST(test_00E0_clear_screen);
+    RUN_TEST(test_FXA1_register_store);
     return UNITY_END();
 }
 

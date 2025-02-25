@@ -344,7 +344,7 @@ void decode(chip8_t* cpu, uint16_t opcode)
                 case 0x33: // stores binary decimal representation of VX at addresses 1, 1+1, and 1+2
                     cpu->memory[cpu->I]     =  cpu->V[regX] / 100;
                     cpu->memory[cpu->I + 1] = (cpu->V[regX] / 10)  % 10;
-                    cpu->memory[cpu->I + 2] = (cpu->V[regX] / 100) % 10;
+                    cpu->memory[cpu->I + 2] = (cpu->V[regX] % 100) % 10;
                     //cpu->pc += 2;                 
                     break;
                 case 0x55: 

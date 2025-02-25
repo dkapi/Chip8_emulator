@@ -3,3 +3,5 @@
 *.o
 
 chip8_em
+
+build/
