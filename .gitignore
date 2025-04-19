@@ -1,5 +1,9 @@
 .vscode/
 
 *.o
-
+*.ch8
+*.c8
+*.rom
 chip8_em
+
+build/

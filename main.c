@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     load_rom(c8 ,rom_file);
 
     // initialize sdl and create window
-    SDL_Window* c8_window = gfx_init(PTALL * 20, PWIDE * 20);
+    SDL_Window* c8_window = gfx_init(PWIDE * SCALE_FACTOR , PTALL * SCALE_FACTOR);
 
     // main loop and SDL event struct
     SDL_Event e;
@@ -49,6 +49,10 @@ int main(int argc, char* argv[])
             } else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP) {
                 SDL_Scancode scancode = e.key.keysym.scancode;
                 bool is_pressed = (e.type == SDL_KEYDOWN);
+                
+                if (scancode == SDL_SCANCODE_ESCAPE) {
+                    quit = true;
+                }
 
                 for( int i = 0; i < KEYSIZE; i++) {
                     if(scancode == chip8_keymap[i]) {
@@ -63,16 +67,12 @@ int main(int argc, char* argv[])
 
         // if drawflag is set, update and render the screen
         if (c8->drawflag) {
-            chip8_update_texture(c8);
-            SDL_RenderClear(renderer);
-            SDL_RenderCopy(renderer, texture, NULL, NULL);
-            SDL_RenderPresent(renderer);
+            chip8_render(c8, SCALE_FACTOR, true);
             c8->drawflag = false;
         }
-        dump_gfx(c8);
 
-        //delay for ~60Hz
-        //SDL_Delay(16); 
+        //delay
+        SDL_Delay(2); 
     }
 
     SDL_DestroyWindow(c8_window);

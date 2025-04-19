@@ -11,7 +11,7 @@ fi
 
 # compile the test file with Unity
 echo "Compiling tests..."
-gcc c8_test.c ../cpu.c unity.c -o "$TEST_EXEC"
+gcc c8_test.c ../cpu.c unity.c -o "$TEST_EXEC" -g
 
 # check if compilation succeeded
 if [ $? -ne 0 ]; then
